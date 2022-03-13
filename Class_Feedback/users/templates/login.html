@@ -1,0 +1,41 @@
+{% extends 'base/base.html' %}
+
+{% load static %}
+
+{% block title %}
+    Login
+{% endblock %}
+
+{% block body %}
+
+    <form method="POST" action="">
+        {% csrf_token %}
+        <div class="container" style="max-width: 500px; margin-top: 40px; border:1px solid black; border-radius: 5px; padding:0px; padding-bottom: 15px;">
+            <div class="container" style="padding-top:10px; padding-bottom:10px; background-color: var(--main_color); margin-bottom: 10px;">
+                <h1 style="color:white;">Login</h1>
+            </div>
+            <div class="mb-3" style="padding-left: 25px; padding-right: 25px;">
+                <label for="exampleFormControlInput1" class="form-label">Username</label>
+                <input type="text" name="username" class="form-control" id="exampleFormControlInput1">
+            </div>
+            <div class="mb-3" style="padding-left: 25px; padding-right: 25px;">
+                <label for="exampleFormControlInput2" class="form-label">Password</label>
+                <input type="password" name="password" class="form-control" id="exampleFormControlInput2">
+            </div>
+            <div class="mb-3" style="padding-left: 25px; padding-right: 25px;">
+                <button type="submit" class="btn btn-primary" style="background-color:var(--main_color); border-color: var(--main_color);">Login</button>
+            </div>
+            {{form.error}}
+            <span style="padding-left:25px;">Don't have an account?</span> <a href="/register">Register</a>
+        </div>
+    </form>
+
+{% endblock %}
+
+{% block user %}
+    <ul class="navbar-nav" style="margin-right: 80px;">
+        <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="/register" style="color:white;">Register</a>
+        </li>
+    </ul>
+{% endblock %}

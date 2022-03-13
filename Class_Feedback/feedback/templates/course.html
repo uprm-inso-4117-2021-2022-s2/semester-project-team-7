@@ -1,0 +1,150 @@
+{% extends 'base/base.html' %}
+
+{% block body %}
+
+<style>
+    .title{
+        margin-bottom: 20px;
+    }
+
+    .centerdiv{
+        background-color: white; 
+        max-width: 1200px; 
+        margin: 0 auto; 
+        min-height: 500px;
+        padding:40px;
+        min-height: 80vh;
+    }
+
+    .header{
+        text-align: center;
+        margin-bottom: 25px;
+    }
+
+    .feedback_container{
+        width: 85%;
+        margin: 0 auto; 
+        min-height: 150px;
+        border:1px solid black;
+        border-radius: 10px;
+        padding:15px;
+        margin-top: 25px;
+    }
+
+    .user_div{
+        min-height:60px;
+        margin-left: 10px;
+        margin-bottom: 15px;
+    }
+
+    .user_circle{
+        background-color: blue; 
+        width:50px; 
+        height:50px; 
+        border-radius: 25px; 
+        text-align: center; 
+        color:white;
+        font-size: 25px;
+        padding-top: 3px;
+        float:left;
+    }
+
+    .user_info{
+        float:left;
+        padding-left: 20px;
+    }
+
+    .username{
+        font-weight: bold;
+        float: up;
+    }
+
+    .feedback_text{
+        margin-left: 80px;
+    }
+
+    .feedback_options{
+        float: right;
+    }
+
+    .dropdown{
+        cursor: pointer;
+    }
+</style>
+
+<div class="centerdiv">
+
+<div class="header">
+{% if course|length > 0 %}
+    {% for a in course %}
+        
+        <h1 class="title">{{a.icon.html | safe}} &nbsp {{a.course_code}}</h1>
+        <h2 class="course_name">{{a.course_name}}</h2>
+        
+    {% endfor %}
+{% else %}
+    <h1 class="title">'{{code}}' Not Found</h1>
+{% endif %}
+</div>
+
+{% if course|length > 0 %}
+{% for feedback in feedbacks %}
+<div class="feedback_container">
+    <div class="user_div">
+        <div class="user_circle">
+            <i class="fa-solid fa-user"></i>
+        </div>
+        <div class="user_info">
+            <div class="username">
+                {% if feedback.anonymous %}
+                    Anonymous
+                {% else %}
+                    <a href="/user?name={{feedback.user}}">{{feedback.user}}</a>
+                {% endif %}
+            </div>
+            <div class="date">
+                {{feedback.date}}
+            </div>
+        </div>
+        <div class="feedback_options">
+            <div class="dropdown">
+                <a data-bs-toggle="dropdown"><i class="fa-solid fa-chevron-down"></i></a>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" href="/user?name={{feedback.user}}">View User</a>
+                    <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#exampleModalCenter">Report Feedback</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="feedback_text">
+        {{feedback.text}}
+    </div>
+</div>
+
+<!-- Report Modal -->
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalCenterTitle">Report Feedback</h5>
+        </div>
+        <div class="modal-body">
+            <h6>Reason:</h6>
+            <form>
+                <textarea style="width:100%; height: 100px; resize: none;"></textarea>
+            </form>
+            
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary">Submit</button>
+        </div>
+    </div>
+    </div>
+</div>
+{% endfor %}
+{% endif %}
+
+</div>
+
+{% endblock %}

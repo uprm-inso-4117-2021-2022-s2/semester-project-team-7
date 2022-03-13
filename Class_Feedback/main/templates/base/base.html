@@ -1,0 +1,114 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Class Feedback{% endblock %}</title>
+    {% block css %}{% endblock %}
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<style>
+    :root{
+        --main_color: #002f9e;
+    }
+
+    .fabutton {
+        background: none;
+        padding: 0px;
+        border: none;
+    }
+    
+    @media (max-width: 991px) {
+        .desktopmenus{
+            display: none;
+        }
+    }
+</style>
+
+<body style="background-color: #E3F2FD;">
+    <!-- JQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    
+    <!-- Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>
+    
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light" style="background-color: var(--main_color);">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/" style="color:white;">
+                    <img src="{% static 'main/images/comment-solid.png' %}" alt="" width="25" height="25" style="margin-right:7px; margin-top:10px; margin-bottom:10px;" class="d-inline-block align-text-top">
+                    <span style="margin-top:10px; margin-bottom:10px;" class="d-inline-block align-text-top"> Class Feedback </span>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="/" style="color:white;"><i class="fas fa-home"></i> &nbsp Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/browse" style="color:white;">Browse</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color:white;">
+                                Menu
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                <li><a class="dropdown-item" href="/browse">Browse</a></li>
+                                <li><a class="dropdown-item" href="/browse">My Feedback</a></li>
+                                <li><a class="dropdown-item" href="/browse">Replies</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="desktopmenus" style="background-color: white; border-radius: 5px;">
+                    <form class="form-inline my-2 my-lg-0" action="/search">
+                        <input class="form-control mr-sm-2" style="display:inline !important; width:auto;" type="search" placeholder="Search" aria-label="Search" name="text">
+                        <button type="submit" class="fabutton"><i class="fa-solid fa-magnifying-glass" style="padding-left: 5px; padding-right: 10px;"></i></button>
+                    </form>
+                </div>
+            </div>
+            {% if user.is_authenticated %}
+                <div class="desktopmenus">
+                    <ul class="navbar-nav" style="margin-right: 50px;">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color:white;">
+                            {{request.user}}
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                            <li><a class="dropdown-item" href="/logout">Logout</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            {% else %}
+                <div class="desktopmenus">
+                    <ul class="navbar-nav" style="margin-right: 80px;">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="/login" style="color:white;">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="/register" style="color:white;">Register</a>
+                        </li>
+                    </ul>
+                </div>
+            {% endif %}
+        </nav>
+
+    </header>
+
+    {% block body %}No content found{% endblock %}
+
+</body>
+</html>

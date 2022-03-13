@@ -1,0 +1,111 @@
+{% extends 'base/base.html' %}
+
+{% block body %}
+
+<style>
+    .title{
+        text-align: center;
+        margin-top: 40px;
+        margin-bottom: 40px;
+    }
+
+    .card-icon{
+        font-size: 40px;
+    }
+
+    .card-content{
+        color: black;
+    }
+
+    a:link{
+        text-decoration: none;
+    }
+
+    .horizontal {
+        margin: 0;
+        padding: 0;
+    }
+
+    .horizontal li {
+        display: inline-block;
+        background-color: white;
+        margin: 15px;
+        text-align: center;
+        width: 180px;
+        height: 180px;
+        border: 1px solid lightgray;
+        border-radius: 15px;
+    }
+
+    .course{
+        height:100%;
+        position: relative;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -35%);
+    }
+</style>
+
+<h1 class="title">
+    Browse Courses
+</h1>
+
+<div style="max-width: 1300px; margin:0 auto;">
+
+    <ul class="horizontal">
+
+        {% for course in courses %}
+
+        <li>    
+            <div class="course">
+                <a href="/course?code={{course.course_code}}" class="card-content">
+                    <span class="card-icon">{{course.icon.html | safe}}</span>
+                    <h5>{{course.course_code}}</h5>
+                    <p>{{course.course_name}}</p>
+                </a>
+            </div>
+        </li>    
+
+        {% endfor %}
+
+        <li>    
+            <div class="course">
+                <a href="/" class="card-content">
+                    <span class="card-icon"><i class="fa-solid fa-question"></i></span>
+                    <h5>Test</h5>
+                    <p>Testing</p>
+                </a>
+            </div>
+        </li>   
+        <li>    
+            <div class="course">
+                <a href="/" class="card-content">
+                    <span class="card-icon"><i class="fa-solid fa-question"></i></span>
+                    <h5>Test</h5>
+                    <p>Testing</p>
+                </a>
+            </div>
+        </li> 
+        <li>    
+            <div class="course">
+                <a href="/" class="card-content">
+                    <span class="card-icon"><i class="fa-solid fa-question"></i></span>
+                    <h5>Test</h5>
+                    <p>Testing</p>
+                </a>
+            </div>
+        </li> 
+        <li>    
+            <div class="course">
+                <a href="/" class="card-content">
+                    <span class="card-icon"><i class="fa-solid fa-question"></i></span>
+                    <h5>Test</h5>
+                    <p>Testing</p>
+                </a>
+            </div>
+        </li> 
+
+    </ul>
+</div>
+
+{% endblock %}
