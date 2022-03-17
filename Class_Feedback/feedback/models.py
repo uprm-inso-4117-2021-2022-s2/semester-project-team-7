@@ -1,3 +1,4 @@
+from tkinter import CASCADE
 from unittest.mock import DEFAULT
 from django.db import models
 from django.contrib.auth.models import User
@@ -25,6 +26,14 @@ class Feedback(models.Model):
     date = models.DateField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     anonymous = models.BooleanField(default=False)
+    score = models.IntegerField(default=0)
 
     def __str__(self):
         return (str(self.course) + " - " + "Feedback" + " - " + str(self.date))
+
+class Vote(models.Model):
+    feedback = models.ForeignKey(Feedback, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return ("User " + str(self.user) + " - " + "ID " + str(self.feedback.id))

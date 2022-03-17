@@ -5,7 +5,7 @@ Install Virtual Environment
 	pip install virtualenv
 
 Run environment
-	env\Scripts\activate
+	djangoenv\Scripts\activate
 
 Install Django 
 	pip install django 
@@ -40,6 +40,15 @@ Create Admin Account
 Notes: 
 
 (domain)/admin to open administrator page 
+
+SQLite Console 
+	python manage.py dbshell
+
+See tables 
+	.tables
+
+Quit
+	.quit 
 
 admin1
 admin1pass

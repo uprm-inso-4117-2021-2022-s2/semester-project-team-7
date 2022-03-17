@@ -14,6 +14,9 @@
         min-height: 500px;
         padding:40px;
         min-height: 80vh;
+        -moz-box-shadow: 0 0 5px #ccc;
+        -webkit-box-shadow: 0 0 5px #ccc;
+        box-shadow: 0 0 5px #ccc;
     }
 
     .header{
@@ -25,10 +28,12 @@
         width: 85%;
         margin: 0 auto; 
         min-height: 150px;
-        border:1px solid black;
+        -moz-box-shadow: 0 0 5px #ccc;
+        -webkit-box-shadow: 0 0 5px #ccc;
+        box-shadow: 0 0 5px #ccc;
         border-radius: 10px;
         padding:15px;
-        margin-top: 25px;
+        margin-top: 50px;
     }
 
     .user_div{
@@ -60,7 +65,7 @@
     }
 
     .feedback_text{
-        margin-left: 80px;
+        margin-left: 150px;
     }
 
     .feedback_options{
@@ -69,6 +74,45 @@
 
     .dropdown{
         cursor: pointer;
+    }
+
+    a:link{
+        text-decoration: none;
+    }
+
+    .request_button{
+        font-size: 30px;
+        color: white;
+        padding: 5px;
+        padding-left: 15px;
+        padding-right: 15px;
+        background-color: var(--main_color);
+        border-radius: 10px;
+    }
+
+    .votes{
+        cursor: pointer;
+        margin-top: 10px;
+        font-size:20px; 
+        width:60px; 
+        margin-right: 20px; 
+        float:left; 
+        text-align: center; 
+        display: table-cell; 
+        vertical-align: middle;
+        color:black;
+    }
+
+    .num_votes{
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    .addFeedbackForm{
+        width: 85%;
+        margin: 0 auto; 
+
+        margin-top: 40px;
     }
 </style>
 
@@ -83,13 +127,58 @@
         
     {% endfor %}
 {% else %}
-    <h1 class="title">'{{code}}' Not Found</h1>
+    <h1 class="title"><i class="fa-solid fa-question"></i> '{{code}}'</h1>
+    <h2>Course Not Found</h2>
+
+    <a href="/request"><button class="request_button" style="margin-top: 50px;"><h3>Request this course</h3></button></a>
 {% endif %}
 </div>
+
+<div class="addFeedbackForm">
+    <label for="feedbacktext"><h4>Provide <span style="color:var(--main_color)">Feedback</span></h4></label>
+    <textarea class="form-control" id="feedbacktext" rows="3" style="margin-bottom: 15px;"></textarea>
+
+    <input class="form-check-input" type="checkbox" value="" id="anonymouscheck">
+    <label class="form-check-label" for="anonymouscheck">
+        Anonymous
+    </label>
+
+    </br>
+
+    <div style="text-align: center;">
+        <button id="SubmitFeedbackButton" type="submit" class="btn btn-primary" style="background-color:var(--main_color); border-color: var(--main_color);">Submit</button>
+    </div>
+</div>
+
+<script>
+    $("#SubmitFeedbackButton").click(function () {
+        $.ajax({
+        url: '/submitfeedback?course={{course.0.course_code}}',
+        data: { 'feedbacktext': document.getElementById("feedbacktext").value, 
+                'anonymous': document.getElementById("anonymouscheck").checked,
+                'csrfmiddlewaretoken': '{{ csrf_token }}' 
+        },
+        type: 'post',
+        cache: false,
+        success: function (data) {
+            
+            document.getElementById("feedbacktext").value = '';
+            
+        }
+        });
+    });
+</script>
 
 {% if course|length > 0 %}
 {% for feedback in feedbacks %}
 <div class="feedback_container">
+    <div class="votes">
+        <a id="upvote{{feedback.id}}" style="color:{% if feedback.id in uservotes %}blue{% endif %};"><i class="fas fa-chevron-circle-up"></i></a>
+        </br>
+        <span class="num_votes" id="score{{feedback.id}}">{{feedback.score}}</span>
+        </br>
+        <a><i class="fas fa-chevron-circle-down"></i></a>
+    </div>
     <div class="user_div">
         <div class="user_circle">
             <i class="fa-solid fa-user"></i>
@@ -142,9 +231,59 @@
     </div>
     </div>
 </div>
+
+<script>
+    $(function () {
+        $("#upvote{{feedback.id}}").click(function () {
+            $.ajax({
+            url: '/vote',
+            data: { 'id': '{{feedback.id}}' },
+            type: 'get',
+            cache: false,
+            success: function (data) {
+                
+                if($("#upvote{{feedback.id}}").css("color") == 'rgb(0, 0, 0)'){
+                    $("#upvote{{feedback.id}}").css("color", "blue");
+                    $("#score{{feedback.id}}").text(parseInt($("#score{{feedback.id}}").text()) + 1);
+                }
+                else{
+                    $("#upvote{{feedback.id}}").css("color", "black");
+                    $("#score{{feedback.id}}").text(parseInt($("#score{{feedback.id}}").text()) - 1);
+                }
+                
+            }
+            });
+        });
+    });
+</script>
 {% endfor %}
 {% endif %}
 
+{% if feedbacks|length < 1 and course|length > 0 %}
+<div style="text-align: center; margin-top: 80px;">
+    <h3>No Feedback Found</h3>
 </div>
+{% endif %}
+
+</div>
+
+<button type="button" id="send">Post comment!</button>
+
+<script>
+    $(function () {
+    $("#send").click(function () {
+        $.ajax({
+           url: '/vote',
+           data: { 'id': '1' },
+           type: 'get',
+           cache: false,
+           success: function (data) {
+              //$(".comments").append(data);
+              var upvote = document.getElementById("upvote");
+           }
+        });
+    });
+});
+</script>
 
 {% endblock %}

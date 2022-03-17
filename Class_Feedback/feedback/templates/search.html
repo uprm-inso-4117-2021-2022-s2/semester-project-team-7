@@ -44,11 +44,23 @@
         top: 50%;
         transform: translate(-50%, -35%);
     }
+
+    .centerdiv{
+        background-color: white; 
+        max-width: 1200px; 
+        margin: 0 auto; 
+        min-height: 500px;
+        padding:40px;
+        min-height: 80vh;
+        -moz-box-shadow: 0 0 5px #ccc;
+        -webkit-box-shadow: 0 0 5px #ccc;
+        box-shadow: 0 0 5px #ccc;
+    }
 </style>
 
-<h1 style="padding:40px; text-align: center;"><span style="color: var(--main_color); font-weight: bold;"> Search: </span>{{ text }}</h1>
+<div class="centerdiv" style="max-width: 1300px; margin:0 auto;">
 
-<div style="max-width: 1300px; margin:0 auto;">
+    <h1 style="padding:40px; text-align: center;"><span style="color: var(--main_color); font-weight: bold;"> Search: </span>{{ text }}</h1>
 
     <ul class="horizontal">
 
@@ -56,7 +68,7 @@
 
         <li>    
             <div class="course">
-                <a href="/" class="card-content">
+                <a href="/course?code={{course.course_code}}" class="card-content">
                     <span class="card-icon">{{course.icon.html | safe}}</span>
                     <h5>{{course.course_code}}</h5>
                     <p>{{course.course_name}}</p>
