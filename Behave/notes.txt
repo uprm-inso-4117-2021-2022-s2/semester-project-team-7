@@ -1,0 +1,13 @@
+Installing Behave: 
+	pip install selenium 
+	pip install behave 
+
+Download Edge Web Driver: 
+	https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/ 
+
+Add to PATH environment variables 
+
+
+Selenium element queries 
+	https://www.toolsqa.com/selenium-webdriver/find-element-selenium/
+	http://allselenium.info/python-selenium-commands-cheat-sheet-frequently-used/
