@@ -119,64 +119,15 @@
 <div class="centerdiv">
 
 <div class="header">
-{% if course|length > 0 %}
-    {% for a in course %}
-        
-        <h1 class="title">{{a.icon.html | safe}} &nbsp {{a.course_code}}</h1>
-        <h2 class="course_name">{{a.course_name}}</h2>
-        
-    {% endfor %}
-{% else %}
-    <h1 class="title"><i class="fa-solid fa-question"></i> '{{code}}'</h1>
-    <h2>Course Not Found</h2>
+    <h1 class="title">User: {{name}}</h1>
+</div>
 
-    <a href="/request"><button class="request_button" style="margin-top: 50px;"><h3>Request this course</h3></button></a>
+{% if feedbacks|length <= 0 %}
+    <h2 style="text-align: center; margin-top: 40px;">No Feedback Found</h2>
 {% endif %}
-</div>
 
-<div class="addFeedbackForm">
-    <label for="feedbacktext"><h4>Provide <span style="color:var(--main_color)">Feedback</span></h4></label>
-    <textarea class="form-control" id="feedbacktext" rows="3" style="margin-bottom: 15px;"></textarea>
-
-    <input class="form-check-input" type="checkbox" value="" id="anonymouscheck">
-    <label class="form-check-label" for="anonymouscheck">
-        Anonymous
-    </label>
-
-    </br>
-
-    <div style="text-align: center;">
-        <button id="SubmitFeedbackButton" type="submit" class="btn btn-primary" style="background-color:var(--main_color); border-color: var(--main_color);">Submit</button>
-    </div>
-</div>
-
-<script>
-    $("#SubmitFeedbackButton").click(function () {
-        $.ajax({
-        url: '/submitfeedback?course={{course.0.course_code}}',
-        data: { 'feedbacktext': document.getElementById("feedbacktext").value, 
-                'anonymous': document.getElementById("anonymouscheck").checked,
-                'csrfmiddlewaretoken': '{{ csrf_token }}' 
-        },
-        type: 'post',
-        cache: false,
-        success: function (data) {
-            
-            //Erase text from textbox 
-            document.getElementById("feedbacktext").value = '';
-
-            //Show the posted feedback on the screen
-            $.get( "/renderfeedback", function( data ) {
-                $(".addFeedbackForm").after(data);
-            });
-        }
-        });
-    });
-</script>
-
-{% if course|length > 0 %}
 {% for feedback in feedbacks %}
-<div class="feedback_container" id="feedback_container{{feedback.id}}">
+<div class="feedback_container">
     <div class="votes">
         <a id="upvote{{feedback.id}}" style="color:{% if feedback.id in uservotes %}blue{% endif %};"><i class="fas fa-chevron-circle-up"></i></a>
         </br>
@@ -206,8 +157,8 @@
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                     <a class="dropdown-item" href="/user?name={{feedback.user}}">View User</a>
                     <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#exampleModalCenter">Report Feedback</a>
-                    {% if feedback.user.username == user.get_username or user.is_superuser %}
-                    <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#deleteModal{{feedback.id}}">Delete</a>
+                    {% if feedback.user.username == user.get_username %}
+                    <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</a>
                     {% endif %}
                 </div>
             </div>
@@ -241,7 +192,7 @@
 </div>
 
 <!-- Delete Modal -->
-<div class="modal fade" id="deleteModal{{feedback.id}}" tabindex="-1" role="dialog" aria-labelledby="deleteModal" aria-hidden="true">
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModal" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
         <div class="modal-header">
@@ -252,27 +203,13 @@
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            <button type="button" id="delete{{feedback.id}}" class="btn btn-danger">Delete</button>
+            <button type="button" class="btn btn-danger">Delete</button>
         </div>
     </div>
     </div>
 </div>
 
 <script>
-    $("#delete{{feedback.id}}").click(function () {
-        $.ajax({
-            url: '/deletefeedback',
-            data: { 'id': '{{feedback.id}}' },
-            type: 'get',
-            cache: false,
-            success: function (data) {
-                $("#feedback_container{{feedback.id}}").remove();
-
-                $("#deleteModal{{feedback.id}}").modal('hide');
-            }
-        });
-    });
-    
     $(function () {
         $("#upvote{{feedback.id}}").click(function () {
             $.ajax({
@@ -297,33 +234,7 @@
     });
 </script>
 {% endfor %}
-{% endif %}
-
-{% if feedbacks|length < 1 and course|length > 0 %}
-<div style="text-align: center; margin-top: 80px;">
-    <h3>No Feedback Found</h3>
-</div>
-{% endif %}
 
 </div>
-
-<button type="button" id="send">Post comment!</button>
-
-<script>
-    $(function () {
-    $("#send").click(function () {
-        $.ajax({
-           url: '/vote',
-           data: { 'id': '1' },
-           type: 'get',
-           cache: false,
-           success: function (data) {
-              //$(".comments").append(data);
-              var upvote = document.getElementById("upvote");
-           }
-        });
-    });
-});
-</script>
 
 {% endblock %}

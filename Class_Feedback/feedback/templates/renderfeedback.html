@@ -1,0 +1,41 @@
+<div class="feedback_container">
+    <div class="votes">
+        <a id="upvote{{feedback.id}}" style="color:{% if feedback.id in uservotes %}blue{% endif %};"><i class="fas fa-chevron-circle-up"></i></a>
+        </br>
+        <span class="num_votes" id="score{{feedback.id}}">{{feedback.score}}</span>
+        </br>
+        <a><i class="fas fa-chevron-circle-down"></i></a>
+    </div>
+    <div class="user_div">
+        <div class="user_circle">
+            <i class="fa-solid fa-user"></i>
+        </div>
+        <div class="user_info">
+            <div class="username">
+                {% if feedback.anonymous %}
+                    Anonymous
+                {% else %}
+                    <a href="/user?name={{feedback.user}}">{{feedback.user}}</a>
+                {% endif %}
+            </div>
+            <div class="date">
+                {{feedback.date}}
+            </div>
+        </div>
+        <div class="feedback_options">
+            <div class="dropdown">
+                <a data-bs-toggle="dropdown"><i class="fa-solid fa-chevron-down"></i></a>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" href="/user?name={{feedback.user}}">View User</a>
+                    <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#exampleModalCenter">Report Feedback</a>
+                    {% if feedback.user.username == user.get_username %}
+                    <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="feedback_text">
+        {{feedback.text}}
+    </div>
+</div>
