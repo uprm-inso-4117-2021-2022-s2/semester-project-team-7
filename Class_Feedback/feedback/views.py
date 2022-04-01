@@ -1,10 +1,14 @@
+import os
+from os.path import exists
 from django.shortcuts import render
-from .models import Course, Feedback, Vote, User
+from .models import Course, CourseIcon, Feedback, PermissionRequest, Vote, User, Permission
 import datetime
 
 from django.contrib.auth.decorators import login_required
 
 from django.core.files.storage import FileSystemStorage
+
+from django.shortcuts import redirect
 
 # Create your views here.
 @login_required(login_url='/login')
@@ -50,13 +54,21 @@ def viewCourse(request):
 
     user = request.user
 
+    permissions = Permission.objects.filter(user=user, course=course[0])
+
+    if(len(permissions) > 0):
+        permission = True
+    else:
+        permission = False
+
     uservotes = Vote.objects.filter(user=user).filter(feedback__course=course[0]).values_list('feedback', flat=True)
 
     context = {
         'code' : code,
         'course' : course,
         'feedbacks' : feedbacks,
-        'uservotes' : uservotes
+        'uservotes' : uservotes,
+        'permission' : permission
     }
 
     return render(request, 'course.html', context)
@@ -212,18 +224,142 @@ def deletefeedback(request):
 @login_required(login_url='/login')
 def requestpermission(request):
 
-    if(request.method == 'POST'):
-        uploaded_file = request.FILES['document']
-        print(uploaded_file.name)
-        print(uploaded_file.size)
-        fs = FileSystemStorage()
-        name = fs.save(uploaded_file.name, uploaded_file)
-        url = fs.url(name)
-
     courses = Course.objects.all().order_by('-course_code').reverse()
 
     context = {
         'courses' : courses
     }
 
+    if(request.method == 'POST'):
+
+        #User
+        user = request.user
+        
+        #Course Code
+        course_code = request.POST.get('course_code')
+        course = Course.objects.filter(course_code=course_code)
+
+        if(len(course) < 1):
+            return render(request, 'requestpermission.html', context)
+
+        course = course[0]
+
+        #If there is already a permission request from this user/course that is pending or approved, the request will be ignored 
+        requests = PermissionRequest.objects.filter(user=user, course=course, pending=True) | PermissionRequest.objects.filter(user=user, course=course, approved=True)
+        if(len(requests) > 0):
+            return render(request, 'requestpermission.html', context)
+
+        #Comment 
+        comment = request.POST.get('comment')
+
+        #File 
+        uploaded_file = request.FILES['document']
+        splits = uploaded_file.name.split(".")
+        extension = splits[len(splits)-1]
+        file_name = user.username + " - " + course_code + "." + extension
+
+        #Upload the File 
+        fs = FileSystemStorage()
+        name = fs.save(file_name, uploaded_file)
+        url = fs.url(name)
+
+        #PermissionRequest
+        PermissionRequest.objects.create(user=user, course=course, evidence=url, comment=comment)
+
+        return render(request, 'requestpermission.html', context)
+
     return render(request, 'requestpermission.html', context)
+
+@login_required(login_url='/login')
+def permissionrequests(request):
+    
+    user = request.user
+
+    requests = PermissionRequest.objects.filter(user=user).order_by('-id')
+
+    context = {
+        'requests' : requests
+    }
+    
+    return render(request, 'permissionrequests.html', context)
+
+@login_required(login_url='/login')
+def adminpanel_requests(request):
+    
+    user = request.user
+
+    if(not user.is_superuser):
+        return redirect('/')
+    
+    requests = PermissionRequest.objects.filter(pending=True).order_by('-id')
+
+    print(requests)
+
+    context = {
+        'requests' : requests
+    }
+
+    return render(request, 'permissionrequests.html', context)
+
+@login_required(login_url='/login')
+def approverequest(request):
+    
+    user = request.user
+
+    if(not user.is_superuser):
+        return redirect('/')
+
+    id = request.GET.get('id', '')
+
+    requests = PermissionRequest.objects.filter(id=id)
+
+    if(len(requests) < 1):
+        return render(request, 'permissionrequests.html')
+
+    requests = requests[0]
+
+    PermissionRequest.objects.filter(id=id).update(approved=True, pending=False)
+
+    Permission.objects.create(user=user, course=requests.course)
+
+    #Get the path name from the url 
+    file = requests.evidence.split("/")
+    file = file[len(file)-1]
+    file = file.replace("%20", " ")
+    file = "uploaded_files/" + file
+
+    if(exists(file)):
+        os.remove(file)
+
+    return render(request, 'permissionrequests.html')
+
+@login_required(login_url='/login')
+def rejectrequest(request):
+    
+    user = request.user
+
+    if(not user.is_superuser):
+        return redirect('/')
+
+    id = request.GET.get('id', '')
+
+    requests = PermissionRequest.objects.filter(id=id)
+
+    if(len(requests) < 1):
+        return render(request, 'permissionrequests.html')
+
+    requests = requests[0]
+
+    PermissionRequest.objects.filter(id=id).update(approved=False, pending=False)
+
+    #Extract the file name from the url 
+    file = requests.evidence.split("/")
+    file = file[len(file)-1]
+    file = file.replace("%20", " ")
+
+    file = "uploaded_files/" + file
+
+    if(exists(file)):
+        os.remove(file)
+
+    return render(request, 'permissionrequests.html')

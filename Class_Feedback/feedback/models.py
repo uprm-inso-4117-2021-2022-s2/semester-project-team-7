@@ -37,3 +37,21 @@ class Vote(models.Model):
 
     def __str__(self):
         return ("User " + str(self.user) + " - " + "ID " + str(self.feedback.id))
+
+class Permission(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return (str(self.user) + " - " + self.course.course_code)
+
+class PermissionRequest(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    evidence = models.TextField()
+    comment = models.TextField()
+    pending = models.BooleanField(default=True)
+    approved = models.BooleanField(default=False)
+
+    def __str__(self):
+        return (str(self.user) + " - " + self.course.course_code)

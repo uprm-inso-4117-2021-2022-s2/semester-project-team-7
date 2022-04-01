@@ -5,4 +5,3 @@ from django.db.models.fields import CharField
 from django.db.models.fields.related import ForeignKey, OneToOneField
 
 # Create your models here.
-

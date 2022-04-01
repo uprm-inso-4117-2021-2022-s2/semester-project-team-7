@@ -1,5 +1,7 @@
 {% extends 'base/base.html' %}
 
+{% block title %}{{code}}{% endblock %}
+
 {% block body %}
 
 <style>
@@ -135,10 +137,17 @@
 </div>
 
 <div class="addFeedbackForm">
-    <label for="feedbacktext"><h4>Provide <span style="color:var(--main_color)">Feedback</span></h4></label>
-    <textarea class="form-control" id="feedbacktext" rows="3" style="margin-bottom: 15px;"></textarea>
+    </br>
+    {% if not permission %}
+    In order to post feedback, you need to obtain permission by providing evidence of enrollment. <a href="/requestpermission">Click here</a>
+    {% endif %}
 
-    <input class="form-check-input" type="checkbox" value="" id="anonymouscheck">
+    </br></br>
+    
+    <label for="feedbacktext"><h4>Provide <span style="color:var(--main_color)">Feedback</span></h4></label>
+    <textarea {% if not permission %}disabled{% endif %} class="form-control" id="feedbacktext" rows="3" style="margin-bottom: 15px;"></textarea>
+
+    <input {% if not permission %}disabled{% endif %} class="form-check-input" type="checkbox" value="" id="anonymouscheck">
     <label class="form-check-label" for="anonymouscheck">
         Anonymous
     </label>
@@ -146,7 +155,7 @@
     </br>
 
     <div style="text-align: center;">
-        <button id="SubmitFeedbackButton" type="submit" class="btn btn-primary" style="background-color:var(--main_color); border-color: var(--main_color);">Submit</button>
+        <button {% if not permission %}disabled{% endif %} id="SubmitFeedbackButton" type="submit" class="btn btn-primary" style="background-color:var(--main_color); border-color: var(--main_color);">Submit</button>
     </div>
 </div>
 

@@ -14,7 +14,11 @@ urlpatterns = [
     path('deletefeedback', views.deletefeedback),
     path('myfeedback', views.myFeedback),
     path('user', views.user),
-    path('requestpermission', views.requestpermission)
+    path('requestpermission/', views.requestpermission),
+    path('permissionrequests/', views.permissionrequests),
+    path('adminpanel/requests/', views.adminpanel_requests),
+    path('approverequest/', views.approverequest),
+    path('rejectrequest/', views.rejectrequest)
 ]
 
 if settings.DEBUG:

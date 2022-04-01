@@ -1,0 +1,233 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Permission Requests{% endblock %}
+
+{% block body %}
+
+<style>
+    .title{
+        margin-bottom: 20px;
+    }
+
+    .centerdiv{
+        background-color: white; 
+        max-width: 1200px; 
+        margin: 0 auto; 
+        min-height: 500px;
+        padding-top:40px;
+        padding-bottom:40px;
+        padding-left: 100px;
+        padding-right: 100px;
+        min-height: 100vh;
+        -moz-box-shadow: 0 0 5px #ccc;
+        -webkit-box-shadow: 0 0 5px #ccc;
+        box-shadow: 0 0 5px #ccc;
+    }
+
+    .header{
+        text-align: center;
+        margin-bottom: 25px;
+    }
+
+    .request{
+        width: 85%;
+        margin: 0 auto; 
+        min-height: 150px;
+        -moz-box-shadow: 0 0 5px #ccc;
+        -webkit-box-shadow: 0 0 5px #ccc;
+        box-shadow: 0 0 5px #ccc;
+        border-radius: 10px;
+        padding:15px;
+        margin-top: 50px;
+    }
+
+    .top_div{
+        min-height:60px;
+        margin-left: 10px;
+        margin-bottom: 15px;
+    }
+
+    .icon_circle{
+        width:50px; 
+        height:50px; 
+        border-radius: 25px; 
+        text-align: center; 
+        color:white;
+        font-size: 25px;
+        padding-top: 6px;
+        float:left;
+    }
+
+    .user_info{
+        float:left;
+        padding-left: 20px;
+    }
+
+    .course{
+        font-weight: bold;
+        margin-top: 12px;
+    }
+
+    .feedback_text{
+        margin-left: 80px;
+    }
+
+    .feedback_options{
+        float: right;
+    }
+
+    .dropdown{
+        cursor: pointer;
+    }
+
+    a:link{
+        text-decoration: none;
+        color:black;
+    }
+
+    .document{
+        margin-top: 50px;
+        width:100%;
+        height:80vh;
+        
+    }
+
+    .modal-body {
+        max-height: 80vh;
+        overflow-y: auto; 
+        padding: 25px;
+    }
+</style>
+
+{% if user.is_superuser %}
+<script>
+    function resizeIframe(iframe) {
+        iframe.height = iframe.contentWindow.document.body.scrollHeight + "px";
+    }
+</script>  
+{% endif %}
+
+<div class="centerdiv">
+    <div class="header">
+        <h1 class="title">Permission Requests</h1>
+    </div>
+
+    {% for request in requests %}
+    <div class="request" id="feedback_container{{feedback.id}}">
+        <div class="top_div">
+            <div id="requesticon{{request.id}}" class="icon_circle" style="background-color:{% if request.approved %}green{% elif request.pending %}orange{% else %}red{% endif %}">
+                {% if request.approved %}
+                <i class="fa-solid fa-check"></i>
+                {% elif request.pending %}
+                <i class="fa-solid fa-ellipsis"></i>
+                {% else %}
+                <i class="fa-solid fa-xmark"></i>
+                {% endif %}
+            </div>
+            <div class="user_info">
+                <div class="course">
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#viewModal{{request.id}}"><h4>{{request.user}} - {{request.course}}</h4></a>
+                </div>
+            </div>
+            {% if not request.approved %}
+            <div class="feedback_options">
+                <div class="dropdown">
+                    <a data-bs-toggle="dropdown"><i class="fa-solid fa-chevron-down"></i></a>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        {% if user.is_superuser %}
+                        <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#viewModal{{request.id}}">View</a>
+                        <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#viewModal{{request.id}}">Edit Comment</a>
+                        {% endif %}
+                        <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#cancelModal{{request.id}}">Cancel</a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        <div class="feedback_text">
+            <h5>Comment:</h5>
+            {{request.comment}}
+        </div>
+    </div>
+    
+    {% if user.is_superuser %}
+    <div class="modal fade bd-example-modal-lg" id="viewModal{{request.id}}" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl ">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h4 class="modal-title h4" id="myLargeModalLabel">{{request.user}} - {{request.course}}</h4>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-hidden="true"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div class="modal-body">
+                    <h5>Comment:</h5>
+                    <div style="margin-left: 10px;">
+                        {{request.comment}}
+                    </div>
+
+                    </br>
+                    
+                    <iframe class="document" src="{{request.evidence}}"></iframe>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="reject{{request.id}}" class="btn btn-danger">Reject</button>
+                    <button type="button" id="approve{{request.id}}" class="btn btn-success">Approve</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $("#approve{{request.id}}").click(function () {
+            $.ajax({
+                url: '/approverequest',
+                data: { 'id': '{{request.id}}' },
+                type: 'GET',
+                cache: false,
+                success: function (data) {
+                    $("#viewModal{{request.id}}").modal('hide');
+                    $("#requesticon{{request.id}}").css("background-color", "green");
+                    document.getElementById("requesticon{{request.id}}").innerHTML = '<i class="fa-solid fa-check"></i>';
+                }
+            });
+        });
+
+        $("#reject{{request.id}}").click(function () {
+            $.ajax({
+                url: '/rejectrequest',
+                data: { 'id': '{{request.id}}' },
+                type: 'GET',
+                cache: false,
+                success: function (data) {
+                    $("#viewModal{{request.id}}").modal('hide');
+                    $("#requesticon{{request.id}}").css("background-color", "red");
+                    document.getElementById("requesticon{{request.id}}").innerHTML = '<i class="fa-solid fa-xmark"></i>';
+                }
+            });
+        });
+    </script>
+    {% endif %}
+    
+
+    <!-- Cancel Modal -->
+    <div class="modal fade" id="cancelModal{{request.id}}" tabindex="-1" role="dialog" aria-labelledby="cancelModal" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cancelModalTitle">Cancel Request</h5>
+            </div>
+            <div class="modal-body">
+                <h6>Once cancelled, it cannot be recovered</h6>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" id="cancel{{request.id}}" class="btn btn-danger">Cancel</button>
+            </div>
+        </div>
+        </div>
+    </div>
+    {% endfor %}
+
+</div>
+
+{% endblock %}

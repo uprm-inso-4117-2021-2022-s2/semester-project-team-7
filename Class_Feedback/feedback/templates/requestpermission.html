@@ -1,0 +1,170 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Request Permission{% endblock %}
+
+{% block body %}
+
+<style>
+    .title{
+        margin-bottom: 20px;
+    }
+
+    .centerdiv{
+        background-color: white; 
+        max-width: 1200px; 
+        margin: 0 auto; 
+        min-height: 500px;
+        padding-top:40px;
+        padding-bottom:40px;
+        padding-left: 100px;
+        padding-right: 100px;
+        min-height: 100vh;
+        -moz-box-shadow: 0 0 5px #ccc;
+        -webkit-box-shadow: 0 0 5px #ccc;
+        box-shadow: 0 0 5px #ccc;
+    }
+
+    .header{
+        text-align: center;
+        margin-bottom: 25px;
+    }
+
+    .feedback_container{
+        width: 85%;
+        margin: 0 auto; 
+        min-height: 150px;
+        -moz-box-shadow: 0 0 5px #ccc;
+        -webkit-box-shadow: 0 0 5px #ccc;
+        box-shadow: 0 0 5px #ccc;
+        border-radius: 10px;
+        padding:15px;
+        margin-top: 50px;
+    }
+
+    .user_div{
+        min-height:60px;
+        margin-left: 10px;
+        margin-bottom: 15px;
+    }
+
+    .user_circle{
+        background-color: blue; 
+        width:50px; 
+        height:50px; 
+        border-radius: 25px; 
+        text-align: center; 
+        color:white;
+        font-size: 25px;
+        padding-top: 3px;
+        float:left;
+    }
+
+    .user_info{
+        float:left;
+        padding-left: 20px;
+    }
+
+    .username{
+        font-weight: bold;
+        float: up;
+    }
+
+    .feedback_text{
+        margin-left: 150px;
+    }
+
+    .feedback_options{
+        float: right;
+    }
+
+    .dropdown{
+        cursor: pointer;
+    }
+
+    a:link{
+        text-decoration: none;
+    }
+
+    .request_button{
+        font-size: 30px;
+        color: white;
+        padding: 5px;
+        padding-left: 15px;
+        padding-right: 15px;
+        background-color: var(--main_color);
+        border-radius: 10px;
+    }
+
+    .votes{
+        cursor: pointer;
+        margin-top: 10px;
+        font-size:20px; 
+        width:60px; 
+        margin-right: 20px; 
+        float:left; 
+        text-align: center; 
+        display: table-cell; 
+        vertical-align: middle;
+        color:black;
+    }
+
+    .num_votes{
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    .addFeedbackForm{
+        width: 85%;
+        margin: 0 auto; 
+
+        margin-top: 40px;
+    }
+
+    .explanation_text{
+        font-size: 20px;
+    }
+
+    #course_select{
+        min-width: 200px;
+    }
+
+    .permission_form{
+        padding-left: 20px;
+    }
+</style>
+
+<div class="centerdiv">
+    <div class="header">
+        <h1 class="title">Request Permission</h1>
+    </div>
+
+    <p class="explanation_text">
+        </br>It is very important to us that <span style="color:var(--main_color)"></span>Class Feedback</span> comes from legitimate sources.
+        Because of this, it is a requirement to provide evidence of enrollment in a course before posting feedback to it. 
+        This evidence will only be seen by site administrators and deleted as soon as it is approved. </br></br></br>
+    </p>
+
+    <form class="permission_form" method="post" enctype="multipart/form-data" action="/requestpermission/">
+        {% csrf_token %}
+        <h5>Course:</h5>
+        <select class="form-control" name="course_code" id="exampleFormControlSelect1">
+            {% for course in courses %}
+                <option>{{course.course_code}}</option>
+            {% endfor %}
+        </select>
+
+        <h5 style="margin-top: 50px;">Enrollment Evidence:</h5>
+        
+        <input type="file" name="document" class="form-control-file" id="exampleFormControlFile1">
+
+        <h5 style="margin-top: 50px;">Comment (Optional):</h5>
+        <textarea name="comment" class="form-control" id="commenttext" rows="3"></textarea>
+
+        <div style="text-align: center;">
+            <button style="margin-top: 50px;" id="SubmitFeedbackButton" type="submit" class="btn btn-primary" style="background-color:var(--main_color); border-color: var(--main_color);">Submit</button>
+        </div>
+    </form>
+
+</div>
+
+{% endblock %}
